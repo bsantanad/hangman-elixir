@@ -1,0 +1,99 @@
+notes from elixir course
+========================
+
+we will use elixir to build a hangman game.
+
+for the hangman game we will write three different applications, which elixir
+projects which basically are independent chunks of code that does one thing
+that communicate with other chunks of code
+
+these modules/projects/applications are:
+- dictionary
+- game
+- UI
+
+mix
+---
+
+```
+mix new application # create new app
+mix run # run app 
+mix test # test app
+mix clean # clean directory 
+```
+
+If you want for you application to be in `iex` which is the repl for elixir
+you can do so by using
+
+```
+iex -S mix
+```
+now all you functions will be available inside the repl.
+
+you can recompile the module inside iex
+
+```
+iex(1)> r <name of the the module>
+```
+
+splitting strings
+----------------
+```
+eg = "123\nndfd\nhola\n"
+String.split(eg, ~r/\n/) # split on \n chars
+String.split(eg, ~r/\n/, trim: true) # but remove the empty last element
+```
+
+functions return the last expression evaluated (return keyword does not exists).
+
+eg.
+```
+def word_list do
+  words = File.read!("assets/words.txt")
+  String.split(words, ~r/\n/, trim: true)
+end
+```
+this would return a list of words.
+
+nevertheless that function is not very 'functional' per se, to make it
+as if we were using elixir, we need to modify it a bit
+```
+def word_list do
+  "assets/words.txt"
+  |> File.read!() 
+  |> String.split(~r/\n/, trim: true)
+end
+```
+
+the `|>` is a pipe, like the ones in the terminal, so it will take the string
+"assets/words.txt" and input it into the File.read! function as a first param,
+then we take the output of that one, and add pipe it to the String.split one.
+
+
+there is also a thing called module attribute, this will just run the
+instructions once, not every time we want a new word, meaning we don't want to
+read and reread every call.  but using the module attribute to just read it one.
+
+```
+  @word_list 
+    "assets/words.txt"
+    |> File.read!() 
+    |> String.split(~r/\n/, trim: true)
+
+  def random_word do
+    @word_list
+    |> Enum.random()
+  end
+```
+
+oop vs functional programming
+-----------------------------
+
+in the world of functional programming, state is decoupled from behavior. State
+is always immutable—it represents a fact that is true at some point in the life
+of your code.
+
+functions transform state into new state. They never change the state that's
+given to them. This means that ideal functions are pure: given a particular
+input, they will always produce the same output. In turn, this means that
+functions are easy to compose and reuse.
